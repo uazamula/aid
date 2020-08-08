@@ -66,7 +66,7 @@ public class ElevatorMain2 {
             case(2):
                 break;
         }
-        System.out.println("Initially");
+        System.out.println("Finally");
         System.out.println("Lift's position: "  +position);
         System.out.println("Call From: " +floorFrom);
         System.out.println("Is full? (0-empty, 1 - neither empty nor full, 2 - full): "
