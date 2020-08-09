@@ -37,9 +37,9 @@ public class ElevatorMain {
                 if(position ==0){
                     isUp = true; direction = 1;
                     if(isRushHourDown)
-                        x=farthestUpFrom();
+                        x=farthestUp(0);
                     else
-                        x= nearestUpFrom(position);
+                        x= nearestUp(position,0);
                 }
                 else{
                     if(floorFrom[0]){

@@ -1,39 +1,51 @@
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class ElevatorMain2 {
-    static int numFloor=6;
+public class ResidentialBuilding {
+    static int numFloor=12;
+    static int limitOfWeight = 500;//kg
+    static double coefOfFullness = 0.9;
+    static int isFullByMoreThan =(int)(limitOfWeight*coefOfFullness);
+    static int weight=0;
     static boolean[] floorFrom = new boolean[numFloor];
     static boolean[] floorTo = new boolean[numFloor];
     static int[] floorFromInt = new int[numFloor-1];
     static int[] floorToInt = new int[numFloor-1];
-    //static boolean isRushHourUp = false;//input
-    //static boolean isRushHourDown = false;//input
-    //static boolean isRushHourSetupCorrect =!(isRushHourUp && isRushHourDown);// check correctness
-    //static boolean isFull = false;//input
-    //static boolean isEmpty = true;//input
-    //static boolean isFullnessSetupCorrect = !(isFull && isEmpty);// check correctness
-   // static boolean isUp = false;//input;
-   // static boolean isDown = false;//input;
-    //static boolean isUpDownSetupCorrect = !(isUp && isDown);//check correctness
     static int position=2;//initialisation
     static int x=0; //decision variable;
     static int howFullIs = 0;//0-Empty, 1 - Partially full, 2 - Full
     static int direction = 0;// -1 - down, 0 - stand, +1 - up
     static int rushHourMode = 2;// 0 - no RH, 1 - RHDown, 2 -RHUp
     static boolean isDirectionCorrect = (howFullIs!=0||direction==0);
+    static boolean isMove;
+    static boolean doorIsClosed;
+    static int xTry=-1;
+    final static int FILLED_WITH = -1;
 
     public static void main(String[] args) {
         Scanner kb = new Scanner(System.in);
-        boolean isLoop=true;
-        //
 
-        //floorToInt[0]=2//input
-        //
+        boolean isLoop=true;
+
+        Arrays.fill(floorFrom,false);
+        Arrays.fill(floorTo,false);
+        System.out.println(Arrays.toString(floorFromInt));
+        doorIsClosed = true;
+        isMove = false;
+        direction = 0;
+        System.out.print("Enter floor from or enter " + numFloor + " to quit:) ");
+        floorFromInt[0]=kb.nextInt();//input
+        if (floorFromInt[0]>=0&&floorFromInt[0]<numFloor) {
+            floorFrom[floorFromInt[0]] = true;
+            System.out.print("Enter an initial position (from 0 to " + (numFloor-1)+ "): ");
+            position = kb.nextInt();//input
+        }
+        else
+            isLoop = false;
+
         while(isLoop) {
-            Arrays.fill(floorFrom,false);
-            Arrays.fill(floorTo,false);
-            Arrays.fill(floorFromInt,-1);
+            Arrays.fill(floorFromInt,FILLED_WITH);
+            Arrays.fill(floorToInt,FILLED_WITH);
             System.out.print("Enter floor1 from or enter " + numFloor + " to quit:) ");
             floorFromInt[0]=kb.nextInt();//input
             System.out.print("Enter floor2 from: " );
@@ -45,16 +57,16 @@ public class ElevatorMain2 {
             howFullIs=kb.nextInt();
             if(howFullIs!=0) {
                 System.out.print("Enter floor1 to: ");
-                floorFromInt[0] = kb.nextInt();//input
+                floorToInt[0] = kb.nextInt();//input
                 System.out.print("Enter floor2 to: ");
-                floorFromInt[1] = kb.nextInt();// input don't repeat previous values (2 in this case)
-                floorTo[floorFromInt[0]] = true;
-                floorTo[floorFromInt[1]] = true;
+                floorToInt[1] = kb.nextInt();// input don't repeat previous values (2 in this case)
+                floorTo[floorToInt[0]] = true;
+                floorTo[floorToInt[1]] = true;
             }
             System.out.print("Enter an initial position: " );
             position=kb.nextInt();
-            System.out.print("Direction: " );
-            direction=kb.nextInt();
+            System.out.print("Direction: " );//! move before loop
+            direction=kb.nextInt();//move before loop, it will keep changing
             System.out.print("RushHourMode: ");
             rushHourMode=kb.nextInt();
 
@@ -69,12 +81,66 @@ public class ElevatorMain2 {
             System.out.println("direction: " + direction);
             System.out.println();
 
+
+
+            //position=7;
+            int lift = 178;
+            int to = 183;
+            int from = 176;
+            int underline=95;
+            int space =32;
+            int it1=space, it2=underline,it3=space;
+            //floorTo[3]=true;
+            //floorTo[numFloor-1]=true;
+            //floorFrom[0]=true;
+            //floorFrom[4]=true;
+            //for (int i =128; i<255;i++)
+             //   System.out.println(i + " " +(char)i);
+
+            System.out.println("   ___________");
+            for (int i = numFloor-1; i>=0;i--) {
+                if(i==position) {
+                    it1 = 91;it3=93;
+                }
+                if(floorFrom[i])
+                    it2=from;
+                if(floorTo[i])
+                    it1=to;
+                System.out.printf("%2d",(i + 0)) ;
+                System.out.println(" ____" + (char)it1 + (char)it3 +(char)it2  + "____");
+                it1=space; it3=space; it2=underline;
+            }
+            System.out.print("RushHourMode: ");
+            rushHourMode=kb.nextInt();
+
+
+
             switch (howFullIs) {
                 case (0):
+                    switch (direction){
+                        case(-1):
+                            x=nearest(position,0,-1);
+                            break;
+                        case(1):
+                            x=farthestUp(position,0);
+                            break;
+                        case(0):
+                            x= floorFromInt[0];//the first pressed call button
+                    }
+                    break;
+                case (1):
+                    switch (direction){
+                        case (-1):
+                            xTry=nearest(position,1,-1);
+                           // if xTry=
+                            break;
+                        case (1):
+                            xTry=-1;
+                    }
                     if (position == 0) {
                         direction = 1;
                         if (rushHourMode == 1)
-                            x = farthestUp(0);//from
+                            x = farthestUp(position,0);//from
                         else
                             x = nearest(position, 0, 1);
                     } else {
@@ -88,11 +154,12 @@ public class ElevatorMain2 {
                             setUp1(0);
                     }
                     break;
-                case (1):
-                    break;
+
                 case (2):
                     break;
             }
+            if (x==numFloor-1||x==0)//
+                direction =0;
             System.out.println("Finally");
             System.out.println("direction: " + direction);
             System.out.println("Where go to?: " + x);
@@ -142,8 +209,30 @@ public class ElevatorMain2 {
             }
         }
     }
+    public static void setupNextStep(int m, int d){
+        if(farthestUp(position,m)<0)
+            if (farthestDown(position, m)>=0)
+                direction=-1;
+            else
+                direction=0;
+        else
+            direction = 1;
+        if(farthestDown(position,m)<0)
+            if (farthestUp(position, m)>=0)
+                direction=1;
+            else
+                direction=0;
+        else
+            direction = -1;
 
-    public static int farthestUp(int mode){
+        floorFrom[x]=false;
+        floorTo[x]=false;
+
+
+
+    }
+
+    public static int farthestUp(int x, int mode){
         int xx=-1;
         boolean[] arr= new boolean[numFloor];
         switch (mode) {
@@ -153,7 +242,24 @@ public class ElevatorMain2 {
                         arr[i] = floorFrom[i]||floorTo[i];
                     break;
         }
-        for(int i = 0; i< numFloor; i++)
+        if (x<numFloor-1)
+            for(int i = x+1; i< numFloor; i++)
+                if (arr[i])
+                    xx = i;
+        return xx;
+    }
+    public static int farthestDown(int position, int mode){
+        int xx=-1;
+        boolean[] arr= new boolean[numFloor];
+        switch (mode) {
+            case (0): arr = floorFrom; break;
+            case (2): arr = floorTo; break;
+            case (1): for (int i=0; i<numFloor; i++)
+                arr[i] = floorFrom[i]||floorTo[i];
+                break;
+        }
+        if (x>0)
+            for(int i = x-1; i>=0; i--)
             if (arr[i])
                 xx = i;
         return xx;
